@@ -1,12 +1,15 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Navbar, Container, Nav } from 'react-bootstrap'
 import './App.css';
+import axios from 'axios'
 
 import products from './Data'
 import Detail from './routes/Detail'
 
 import {Routes, Route, Link, useNavigate, Outlet} from 'react-router-dom'
+
+let products2, setProducts2 = useState([])
 
 function App() {
 
@@ -34,10 +37,21 @@ function App() {
       <div className="container">
         <Routes>
           <Route path='/' element={
-            <div className="row">
-              <Card products={products[0]} i={1}></Card>
-              <Card products={products[1]} i={2}></Card>
-              <Card products={products[2]} i={3}></Card>
+            <div>
+              <div className="row">
+                <Card products={products[0]} i={1}></Card>
+                <Card products={products[1]} i={2}></Card>
+                <Card products={products[2]} i={3}></Card>
+              </div>
+              <button onClick={() => {
+                axios.get('https://codingapple1.github.io/shop/data2.json').then((result) => {
+                  let products2Copy = [...products2]
+                  products2Copy = result
+                  setProducts2(products2Copy)
+                }).catch(() => {
+                  console.log('실패')
+                })
+              }}>서버에 요청하기</button>
             </div>
           }></Route>
           <Route path='/detail/:id' element={<Detail products={products}></Detail>}></Route>
