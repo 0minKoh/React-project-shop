@@ -6,14 +6,20 @@ import axios from 'axios'
 
 import products from './Data'
 import Detail from './routes/Detail'
+import Cart from './routes/Cart'
 
 import {Routes, Route, Link, useNavigate, Outlet} from 'react-router-dom'
 
-let products2, setProducts2 = useState([])
-
 function App() {
 
+  let products2, setProducts2 = useState([])
   let navigate = useNavigate()
+
+  useEffect(() => {
+    if (localStorage.length == 0) {
+      localStorage.setItem('watched', JSON.stringify([]))
+    }
+  }, [])
 
   return (
     <div className="App">
@@ -30,6 +36,9 @@ function App() {
             <Nav.Link onClick={() => {navigate('/event')}}>
               Event
             </Nav.Link>
+            <Nav.Link onClick={() => {navigate('/cart')}}>
+              Cart
+            </Nav.Link>
           </Nav>
         </Container>
       </Navbar>
@@ -39,9 +48,9 @@ function App() {
           <Route path='/' element={
             <div>
               <div className="row">
-                <Card products={products[0]} i={1}></Card>
-                <Card products={products[1]} i={2}></Card>
-                <Card products={products[2]} i={3}></Card>
+                <Card products={products[0]} i={1} navigate={navigate}></Card>
+                <Card products={products[1]} i={2} navigate={navigate}></Card>
+                <Card products={products[2]} i={3} navigate={navigate}></Card>
               </div>
               <button onClick={() => {
                 axios.get('https://codingapple1.github.io/shop/data2.json').then((result) => {
@@ -54,12 +63,13 @@ function App() {
               }}>서버에 요청하기</button>
             </div>
           }></Route>
-          <Route path='/detail/:id' element={<Detail products={products}></Detail>}></Route>
+          <Route path='/detail/:paramId' element={<Detail products={products}></Detail>}></Route>
           <Route path='/about' element={<div>aboutPage</div>}></Route>
           <Route path='/event' element={<Event></Event>}>
             <Route path='one' element={<p>이벤트1</p>}></Route>
             <Route path='two' element={<p>이벤트2</p>}></Route>
           </Route>
+          <Route path='/cart' element={ <Cart></Cart> }></Route>
         </Routes>
       </div>
     </div>
@@ -77,7 +87,7 @@ function Event() {
 
 function Card(props) {
   return (
-    <div className="col-md-4 col-12">
+    <div className="col-md-4 col-12" onClick={() => {props.navigate('/detail/' + String(props.i - 1))}}>
       <img src={'http://codingapple1.github.io/shop/shoes' + props.i + '.jpg'} width="80%" alt="" />
       <h4>{props.products.title}</h4>
       <p>{props.products.content}</p>
